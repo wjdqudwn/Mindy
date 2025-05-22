@@ -41,6 +41,7 @@ header h1 {
   margin-bottom: 30px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
   transition: background-color 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
+
 }
 
 .mic-button:hover {
@@ -54,6 +55,9 @@ header h1 {
   color: white;
   box-shadow: 0 0 12px #dc3545, 0 0 8px #dc3545 inset; /* 녹음 중일 때 빛나는 효과 */
   animation: pulse-recording 1.5s infinite;
+  width: 105px;
+  height: 110px;
+
 }
 
 @keyframes pulse-recording {
