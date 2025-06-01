@@ -5,6 +5,7 @@ import soundfile as sf
 import torch
 import librosa
 from df.enhance import enhance, init_df
+from pydub import AudioSegment
 
 def clean_noise_from_base64(audio_b64: str) -> str:
     """
@@ -14,8 +15,17 @@ def clean_noise_from_base64(audio_b64: str) -> str:
     if ',' in audio_b64:
         _, audio_b64 = audio_b64.split(',', 1)
     audio_bytes = base64.b64decode(audio_b64)
-    # 메모리에서 wav/mp3 로드
-    audio_np, sr = sf.read(io.BytesIO(audio_bytes))
+
+    try:
+        # pydub를 사용하여 WebM (또는 다른 형식)을 로드하고 WAV로 변환
+        audio_segment = AudioSegment.from_file(io.BytesIO(audio_bytes))
+        wav_buffer = io.BytesIO()
+        audio_segment.export(wav_buffer, format="wav")
+        wav_buffer.seek(0)
+        audio_np, sr = sf.read(wav_buffer)
+    except Exception as e:
+        raise RuntimeError(f"오디오 형식 변환 또는 로드 오류: {e}") from e
+
     if audio_np.ndim > 1:
         audio_np = np.mean(audio_np, axis=1)  # 모노로 변환
     # 48kHz로 리샘플링 (DF 모델 요구)
